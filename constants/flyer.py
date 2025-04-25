@@ -1,0 +1,1 @@
+flyer_url = "https://www.coopmaster.it/volantini/1/volantino.pdf"

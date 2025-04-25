@@ -1,0 +1,2 @@
+def DownloadErrorException(Exception):
+    pass
