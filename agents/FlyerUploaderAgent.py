@@ -4,22 +4,25 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.agents import BaseAgent
 from google.adk.events import Event
 from google.genai import types
+from google import genai
 
 from google.adk.agents.callback_context import CallbackContext
+
+import os
+from dotenv import load_dotenv
 
 from tools.downloading_tool import download_from_link
 from constants.flyer import flyer_url
 
 
-class DownloaderAgent(BaseAgent):
+class FlyerUploaderAgent(BaseAgent):
     def __init__(
             self,
             **kwargs
     ):
         super().__init__(
-            name="DownloaderAgent",
-            description="Agent responsible for downloading the flyer",
-            #after_agent_callback=check_flyer_exists
+            name="FlyerUploaderAgent",
+            description="Agent responsible for uploading the flyer on the cloud",
         )
 
 
@@ -27,25 +30,23 @@ class DownloaderAgent(BaseAgent):
         self,
         ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        print("IN DOWNLOADER")
+        print("IN UPLOADER")
 
-
-        link = ctx.session.state.get("link", "NOOO")
-
-        print(link)
+        load_dotenv()
 
         try:
-            download_from_link(link, "./volantino.pdf")
-
-            content = None
+            client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+            flyer_file = client.files.upload(file="./volantino.pdf")
+            ctx.session.state["flyer_file"] = flyer_file
 
             yield Event(
                 invocation_id=ctx.invocation_id,
                 author=self.name,
                 branch=ctx.branch,
-                content=content,
+                content=None,
                 partial=True
             )
+
         except Exception as err:
             yield Event(
                 invocation_id=ctx.invocation_id,
@@ -54,7 +55,3 @@ class DownloaderAgent(BaseAgent):
                 error_message=str(err),
                 actions=Event.Actions(escalate=True),
             )
-
-
-def check_flyer_exists(callback_context: CallbackContext) -> Optional[types.Content]:
-    pass

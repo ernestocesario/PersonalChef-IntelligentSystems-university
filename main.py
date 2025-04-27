@@ -1,30 +1,40 @@
 from agents.Downloader_agent import DownloaderAgent
+from agents.FlyerUploaderAgent import FlyerUploaderAgent
+from agents.FlyerParser_agent import FlyerParserAgent
+from agents.aaaaa import bbb, ccc
 from google.adk.agents import SequentialAgent
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 from google.genai import types
 
+from agents.FlyerParser_agent import FlyerParserAgent
+
 import asyncio
 
 if __name__ == "__main__":
-    abc = DownloaderAgent(name="DownloaderAgent", description="Agent responsible for downloading content")
+    abc = DownloaderAgent()
+    efg = bbb(name="babababab", description="aaaaalallalalalaal")
+
+    ggg = FlyerUploaderAgent()
 
     pipeline = SequentialAgent(
         name="seqagentTest",
-        description="",
         sub_agents=[
-            abc
+            efg, abc, ggg, FlyerParserAgent, ccc
         ]
     )
 
     root_agent = pipeline
+
 
     async def call_agent_async(query: str, runner, user_id, session_id):
         content = types.Content(role='user', parts=[types.Part(text=query)])
 
         final_response_text = "Agent did not produce a final response."
 
-        async for event in runner.run_async(user_id=user_id, session_id=session_id, new_message=content):
+        events = runner.run_async(user_id=user_id, session_id=session_id, new_message=content)
+
+        async for event in events:
             if event.is_final_response():
                 if event.content and event.content.parts:
                     final_response_text = event.content.parts[0].text
