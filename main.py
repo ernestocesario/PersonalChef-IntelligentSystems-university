@@ -1,3 +1,6 @@
+import sys, asyncio
+
+
 from agents.Downloader_agent import DownloaderAgent
 from agents.FlyerUploaderAgent import FlyerUploaderAgent
 from agents.FlyerParser_agent import FlyerParserAgent
@@ -8,8 +11,6 @@ from google.adk.runners import Runner
 from google.genai import types
 
 from agents.FlyerParser_agent import FlyerParserAgent
-
-import asyncio
 
 if __name__ == "__main__":
     abc = DownloaderAgent()
@@ -28,7 +29,7 @@ if __name__ == "__main__":
 
 
     async def call_agent_async(query: str, runner, user_id, session_id):
-        content = types.Content(role='user', parts=[types.Part(text=query)])
+        content = types.Content(role="user", parts=[types.Part(text=query)])
 
         final_response_text = "Agent did not produce a final response."
 
@@ -40,7 +41,7 @@ if __name__ == "__main__":
                     final_response_text = event.content.parts[0].text
                 elif event.actions and event.actions.escalate:
                     final_response_text = f"Agent escalated: {event.error_message or 'No specific message.'}"
-                break
+        await events.aclose()
 
         print(f"<<< Agent Response: {final_response_text}")
 
@@ -64,7 +65,7 @@ if __name__ == "__main__":
         )
         print(f"Runner created for agent '{actual_root_agent.name}'.")
 
-        await call_agent_async(query = None,
+        await call_agent_async(query = "",
                                 runner=runner_agent_team,
                                 user_id=USER_ID,
                                 session_id=SESSION_ID)
