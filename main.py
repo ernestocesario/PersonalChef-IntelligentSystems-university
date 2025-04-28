@@ -1,27 +1,60 @@
-import sys, asyncio
+import sys
+import asyncio
 
-
-from agents.Downloader_agent import DownloaderAgent
-from agents.FlyerUploaderAgent import FlyerUploaderAgent
-from agents.FlyerParser_agent import FlyerParserAgent
-from agents.aaaaa import bbb, ccc
 from google.adk.agents import SequentialAgent
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 from google.genai import types
 
-from agents.FlyerParser_agent import FlyerParserAgent
+from typing import Optional, Tuple
+
+from agents.Downloader_agent import DownloaderAgent
+from agents.FlyerUploaderAgent import FlyerUploaderAgent
+from agents.FlyerParser_agent import flyerParserAgent
+from agents.DietFilterAgent import dietFilterAgent
+from agents.RecipeMakerAgent import recipeMakerAgent
+from utils.Diet import Diet
+from constants.agents import *
+
+
+
+def get_args() -> Optional[Tuple[Diet, float]]:
+    if len(sys.argv) != 3:
+        print("Usage: python main.py <DIET> <BUDGET>")
+        return None
+    
+    diet_str = sys.argv[1]
+    budget_str = sys.argv[2]
+    
+    try:
+        diet = Diet[diet_str]
+    except KeyError:
+        return False
+    
+
+    try:
+        budget = float(budget_str)
+    except ValueError:
+        return False
+
+    return diet, budget
+
+
 
 if __name__ == "__main__":
-    abc = DownloaderAgent()
-    efg = bbb(name="babababab", description="aaaaalallalalalaal")
+    diet, budget = get_args()
 
-    ggg = FlyerUploaderAgent()
+    downloaderAgent = DownloaderAgent()
+    flyerUploaderAgent = FlyerUploaderAgent()
 
     pipeline = SequentialAgent(
-        name="seqagentTest",
+        name="SequentialAgent",
         sub_agents=[
-            efg, abc, ggg, FlyerParserAgent, ccc
+            downloaderAgent,
+            flyerUploaderAgent,
+            flyerParserAgent,
+            dietFilterAgent,
+            recipeMakerAgent
         ]
     )
 
@@ -47,15 +80,18 @@ if __name__ == "__main__":
 
 
 
-    async def run_team_conversation():
+    async def make_food_recipe():
         session_service = InMemorySessionService()
-        APP_NAME = "tutorial_agent_team"
-        USER_ID = "user_1_agent_team"
-        SESSION_ID = "session_001_agent_team"
+        APP_NAME = "PersonalChef"
+        USER_ID = "user_1"
+        SESSION_ID = "session_001"
 
         session = session_service.create_session(
             app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
         )
+
+        session.state[DIET_SSK] = diet.name
+        session.state[BUDGET_SSK] = budget
 
         actual_root_agent = root_agent
         runner_agent_team = Runner(
@@ -63,7 +99,6 @@ if __name__ == "__main__":
             app_name=APP_NAME,
             session_service=session_service
         )
-        print(f"Runner created for agent '{actual_root_agent.name}'.")
 
         await call_agent_async(query = "",
                                 runner=runner_agent_team,
@@ -72,6 +107,6 @@ if __name__ == "__main__":
     
     
     try:
-        asyncio.run(run_team_conversation())
+        asyncio.run(make_food_recipe())
     except Exception as e:
         print(f"An error occurred: {e}")

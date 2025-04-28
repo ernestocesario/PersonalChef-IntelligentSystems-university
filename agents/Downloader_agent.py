@@ -7,8 +7,8 @@ from google.genai import types
 
 from google.adk.agents.callback_context import CallbackContext
 
-from tools.downloading_tool import download_from_link
-from constants.flyer import flyer_url
+from utils.file_downloader import download_from_link
+from constants.flyer import *
 
 
 class DownloaderAgent(BaseAgent):
@@ -19,7 +19,6 @@ class DownloaderAgent(BaseAgent):
         super().__init__(
             name="DownloaderAgent",
             description="Agent responsible for downloading the flyer",
-            #after_agent_callback=check_flyer_exists
         )
 
 
@@ -27,15 +26,8 @@ class DownloaderAgent(BaseAgent):
         self,
         ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        print("IN DOWNLOADER")
-
-
-        link = ctx.session.state.get("link", "NOOO")
-
-        print(link)
-
         try:
-            download_from_link(link, "./volantino.pdf")
+            download_from_link(FLYER_URL, FLYER_FILEPATH)
 
             content = None
 

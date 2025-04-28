@@ -1,18 +1,6 @@
 from exceptions.DownloadErrorException import DownloadErrorException
 import requests
 
-'''
-def downloader_tool(link: str) -> dict:
-    """
-    Retrieves the flyer of a specific supermarket
-
-    Returns:
-        dict: 
-    """
-    download_from_link(link, "./volantino.pdf")
-    return {"result": None}
-'''
-
 
 def download_from_link(url, outputPath) -> None:
     try:

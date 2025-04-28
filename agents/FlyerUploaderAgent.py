@@ -3,7 +3,6 @@ from typing import AsyncGenerator, Optional
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.agents import BaseAgent
 from google.adk.events import Event
-from google.genai import types
 from google import genai
 
 from google.adk.agents.callback_context import CallbackContext
@@ -11,8 +10,9 @@ from google.adk.agents.callback_context import CallbackContext
 import os
 from dotenv import load_dotenv
 
-from tools.downloading_tool import download_from_link
-from constants.flyer import flyer_url
+from utils.file_downloader import download_from_link
+from constants.flyer import *
+from constants.agents import FLYER_FILE_REFERENCE_SSK
 
 
 class FlyerUploaderAgent(BaseAgent):
@@ -36,8 +36,8 @@ class FlyerUploaderAgent(BaseAgent):
 
         try:
             client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-            flyer_file = client.files.upload(file="./volantino.pdf")
-            ctx.session.state["flyer_file"] = flyer_file
+            flyer_file = client.files.upload(file=FLYER_FILEPATH)
+            ctx.session.state[FLYER_FILE_REFERENCE_SSK] = flyer_file
 
             yield Event(
                 invocation_id=ctx.invocation_id,

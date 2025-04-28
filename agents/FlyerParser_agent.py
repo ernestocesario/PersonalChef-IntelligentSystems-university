@@ -7,13 +7,14 @@ from google.genai.types import Content, Part
 
 from typing import Optional
 from constants.llmModels import GEMINI_1_5_FLASH
+from constants.agents import *
 
 
 def add_flyer_to_request(
         callback_context: CallbackContext, llm_request: LlmRequest
 ) -> Optional[LlmResponse]:
     
-    flyer_file = callback_context.state.get("flyer_file", None)
+    flyer_file = callback_context.state.get(FLYER_FILE_REFERENCE_SSK, None)
  
     flyer_part = Part.from_uri(
         file_uri = flyer_file.uri,
@@ -30,23 +31,17 @@ def add_flyer_to_request(
 
     return None
 
+def print_out(callback_context: CallbackContext) -> Optional[Content]:
+    print("AFTER PARSER:")
+    print(callback_context.state.get(FLYER_PARSER_AGENT_OUTKEY, "Error"))
+    print("END PRINT")
 
-def print_result(callback_context: CallbackContext) -> Optional[Content]:
-    print("IN AFTER AGENT CALLBACK")
-
-    print(callback_context.state.get("flyer_parser_response", "ERROR: NO KEY"))
-
-    return None
-
-
-
-
-FlyerParserAgent = LlmAgent(
+flyerParserAgent = LlmAgent(
     name = "Flyer_parser_agent",
     model = GEMINI_1_5_FLASH,
     description="Provides a csv of type product§price containing all products in a supermarket flyer",
     before_model_callback=add_flyer_to_request,
-    output_key="flyer_parser_response",
-    after_agent_callback=print_result,
+    output_key=FLYER_PARSER_AGENT_OUTKEY,
+    after_agent_callback=print_out
 )
 
