@@ -77,12 +77,11 @@ def save_title_recipe(recipe_title: str, tool_context: ToolContext) -> dict:
 save_title_recipe_tool = FunctionTool(func=save_title_recipe)
 
 
-
 recipeParserAgent = LlmAgent(
     name = "Recipe_parser_agent",
     model = GEMINI_2_0_FLASH,
     description="Calculate the total cost of a recipe",
-    instruction="Take as input a recipe structured as below:\nTITLE_RECIPE\nRECIPE_CONTENT\n\nwhere CONTENT_RECIPT is a CSV structured as product§price, and represents the ingredients of the recipe.\nThe recipe is provided in the session state under the key 'ABCABC'\n\nAll you need to do is:\n- use the recipe_cost_calculator_tool to calculate the total cost of the recipe\n- use the save_recipe_title tool by passing it the recipe title.\nDON'T PRINT ANYTHING.",
+    instruction="Take as input a recipe structured as below:\nTITLE_RECIPE\nRECIPE_CONTENT\n\nwhere CONTENT_RECIPT is a CSV structured as product§price, and represents the ingredients of the recipe.\nThe recipe is provided in the session state under the key '" + RECIPE_MAKER_AGENT_OUTKEY + "'\n\nAll you need to do is:\n- use the recipe_cost_calculator_tool to calculate the total cost of the recipe\n- use the save_recipe_title tool by passing it the recipe title.\nDON'T PRINT ANYTHING.",
     #after_agent_callback=print_out,
-    tools=[recipe_calculator_tool, save_title_recipe_tool]
+    tools=[recipe_calculator_tool, save_title_recipe_tool],
 )

@@ -1,116 +1,60 @@
-import sys
-import asyncio
-
-from google.adk.agents import SequentialAgent
-from google.adk.sessions import InMemorySessionService
-from google.adk.runners import Runner
-from google.genai import types
-
-from typing import Optional, Tuple
-
-from agents.Downloader_agent import DownloaderAgent
-from agents.FlyerUploaderAgent import FlyerUploaderAgent
-from agents.FlyerParser_agent import flyerParserAgent
-from agents.DietFilterAgent import dietFilterAgent
-from agents.RecipeMakerAgent import recipeMakerAgent
-from agents.RecipeParserAgent import recipeParserAgent
-
+from core.runner import make_food_recipe
 from utils.Diet import Diet
 from utils.Difficulty import Difficulty
-from constants.agents import *
+from constants.output import *
+import asyncio
 
 
+def choose_diet():
+    print("🍽️ Choose a diet from the following options:")
+    for i, diet in enumerate(Diet, 1):
+        print(f"{i}. {diet.name} 🍎" if diet == Diet.VEGAN else f"{i}. {diet.name} 🥩")
 
-def get_args() -> Optional[Tuple[Diet, Difficulty]]:
-    if len(sys.argv) != 3:
-        print("Usage: python main.py <DIET> <DIFFICULTY>")
-        return None
-    
-    diet_str = sys.argv[1]
-    difficulty_str = sys.argv[2]
-    
+    choice = int(input("Please enter the number corresponding to your choice: "))
     try:
-        diet = Diet[diet_str]
-    except KeyError:
-        return None
-    
-
-    try:
-        difficulty = Difficulty[difficulty_str]
+        selected_diet = Diet(choice)
+        return selected_diet
     except ValueError:
-        return None
+        print("❌ Invalid choice. Please try again.")
+        return choose_diet()
 
-    return diet, difficulty
+
+
+def choose_difficulty():
+    print("⚡ Choose a difficulty level from the following options:")
+    for i, difficulty in enumerate(Difficulty, 1):
+        print(f"{i}. {difficulty.name} 💪")
+
+    choice = int(input("Please enter the number corresponding to your choice: "))
+    try:
+        selected_difficulty = Difficulty(choice)
+        return selected_difficulty
+    except ValueError:
+        print("❌ Invalid choice. Please try again.")
+        return choose_difficulty()
+
+
+
+def main():
+    print("👋 Welcome! Let's start by choosing your diet and difficulty level.")
+
+    diet = choose_diet()
+    print(f"✅ You have chosen the diet: {diet.name}\n")
+
+    difficulty = choose_difficulty()
+    print(f"✅ You have chosen the difficulty level: {difficulty.name}\n")
+
+
+    try:
+        result = asyncio.run(make_food_recipe(diet, difficulty))
+        print("🎉 Here is your generated recipe! 🍽️")
+        print("Title: " + result[RECIPE_TITLE_KEY] + "\n")
+        print("Ingredients:\n" + result[RECIPE_CONTENT_KEY] + "\n")
+        print("Total cost: " + result[RECIPE_PRICE_KEY] + "€")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
 
 if __name__ == "__main__":
-    args = get_args()
-
-    if args is None:
-        exit()
-
-    diet, difficulty = args
-
-    downloaderAgent = DownloaderAgent()
-    flyerUploaderAgent = FlyerUploaderAgent()
-
-    pipeline = SequentialAgent(
-        name="SequentialAgent",
-        sub_agents=[
-            downloaderAgent,
-            flyerUploaderAgent,
-            flyerParserAgent,
-            dietFilterAgent,
-            recipeMakerAgent,
-            recipeParserAgent
-        ]
-    )
-
-    root_agent = pipeline
-
-
-    async def call_agent_async(query: str, runner, user_id, session_id):
-        content = types.Content(role="user", parts=[types.Part(text=query)])
-
-        final_response_text = "Agent did not produce a final response."
-
-        events = runner.run_async(user_id=user_id, session_id=session_id, new_message=content)
-
-        async for event in events:
-            if event.is_final_response():
-                if event.content and event.content.parts:
-                    final_response_text = event.content.parts[0].text
-                elif event.actions and event.actions.escalate:
-                    final_response_text = f"Agent escalated: {event.error_message or 'No specific message.'}"
-        await events.aclose()
-
-
-
-    async def make_food_recipe():
-        session_service = InMemorySessionService()
-        APP_NAME = "PersonalChef"
-        USER_ID = "user_1"
-        SESSION_ID = "session_001"
-
-        session = session_service.create_session(
-            app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID, state={DIET_SSK: diet.name, DIFFICULTY_SSK: difficulty.name}
-        )
-
-        actual_root_agent = root_agent
-        runner_agent_team = Runner(
-            agent=actual_root_agent,
-            app_name=APP_NAME,
-            session_service=session_service
-        )
-
-        await call_agent_async(query = "",
-                                runner=runner_agent_team,
-                                user_id=USER_ID,
-                                session_id=SESSION_ID)
-    
-    
-    try:
-        asyncio.run(make_food_recipe())
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    main()
