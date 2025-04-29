@@ -13,36 +13,44 @@ from agents.FlyerUploaderAgent import FlyerUploaderAgent
 from agents.FlyerParser_agent import flyerParserAgent
 from agents.DietFilterAgent import dietFilterAgent
 from agents.RecipeMakerAgent import recipeMakerAgent
+from agents.RecipeParserAgent import recipeParserAgent
+
 from utils.Diet import Diet
+from utils.Difficulty import Difficulty
 from constants.agents import *
 
 
 
-def get_args() -> Optional[Tuple[Diet, float]]:
+def get_args() -> Optional[Tuple[Diet, Difficulty]]:
     if len(sys.argv) != 3:
-        print("Usage: python main.py <DIET> <BUDGET>")
+        print("Usage: python main.py <DIET> <DIFFICULTY>")
         return None
     
     diet_str = sys.argv[1]
-    budget_str = sys.argv[2]
+    difficulty_str = sys.argv[2]
     
     try:
         diet = Diet[diet_str]
     except KeyError:
-        return False
+        return None
     
 
     try:
-        budget = float(budget_str)
+        difficulty = Difficulty[difficulty_str]
     except ValueError:
-        return False
+        return None
 
-    return diet, budget
+    return diet, difficulty
 
 
 
 if __name__ == "__main__":
-    diet, budget = get_args()
+    args = get_args()
+
+    if args is None:
+        exit()
+
+    diet, difficulty = args
 
     downloaderAgent = DownloaderAgent()
     flyerUploaderAgent = FlyerUploaderAgent()
@@ -54,7 +62,8 @@ if __name__ == "__main__":
             flyerUploaderAgent,
             flyerParserAgent,
             dietFilterAgent,
-            recipeMakerAgent
+            recipeMakerAgent,
+            recipeParserAgent
         ]
     )
 
@@ -76,8 +85,6 @@ if __name__ == "__main__":
                     final_response_text = f"Agent escalated: {event.error_message or 'No specific message.'}"
         await events.aclose()
 
-        print(f"<<< Agent Response: {final_response_text}")
-
 
 
     async def make_food_recipe():
@@ -87,11 +94,8 @@ if __name__ == "__main__":
         SESSION_ID = "session_001"
 
         session = session_service.create_session(
-            app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID
+            app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID, state={DIET_SSK: diet.name, DIFFICULTY_SSK: difficulty.name}
         )
-
-        session.state[DIET_SSK] = diet.name
-        session.state[BUDGET_SSK] = budget
 
         actual_root_agent = root_agent
         runner_agent_team = Runner(

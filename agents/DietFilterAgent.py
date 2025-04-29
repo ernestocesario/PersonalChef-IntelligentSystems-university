@@ -14,14 +14,36 @@ def print_out(callback_context: CallbackContext) -> Optional[Content]:
     print(callback_context.state.get(DIET_FILTER_AGENT_OUTKEY, "Errore"))
     print("END PRINT")
 
+
+def add_diet_to_request(
+        callback_context: CallbackContext, llm_request: LlmRequest
+) -> Optional[LlmResponse]:
+    
+    previous_output = callback_context.state.get(FLYER_PARSER_AGENT_OUTKEY, "")
+    diet = callback_context.state.get(DIET_SSK, "")
+
+
+     
+
+    prompt_part = Part(text=(
+        "Take the following CSV structured as product§price provided: \n" + previous_output + "\n" \
+        "and delete all rows that do not meet the diet " + diet +
+        "Output ONLY the filtered CSV content in the product§price format, WITHOUT any explanation, comment, or markdown formatting."
+    ))
+
+    llm_request.contents = [
+        Content(role="user", parts=[prompt_part])
+    ]
+
+    return None
+
+
 dietFilterAgent = LlmAgent(
     name = "Diet_filter_agent",
     model = GEMINI_2_0_FLASH,
     description="Takes as input a csv structured as product§price and deletes all rows representing products that do not meet the specified diet. " \
                 "Returns ONLY a filtered product§price csv.",
-    instruction="Take the CSV structured as product§price provided in the session state under the key '" + FLYER_PARSER_AGENT_OUTKEY + "', " \
-                "and delete all rows that do not meet the diet CARNIVORE." \
-                "Output ONLY the filtered CSV content in the product§price format, WITHOUT any explanation, comment, or markdown formatting.",
     output_key=DIET_FILTER_AGENT_OUTKEY,
-    after_agent_callback=print_out
+    before_model_callback=add_diet_to_request,
+    #after_agent_callback=print_out
 )

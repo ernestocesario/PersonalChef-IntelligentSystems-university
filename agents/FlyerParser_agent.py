@@ -42,6 +42,6 @@ flyerParserAgent = LlmAgent(
     description="Provides a csv of type product§price containing all products in a supermarket flyer",
     before_model_callback=add_flyer_to_request,
     output_key=FLYER_PARSER_AGENT_OUTKEY,
-    after_agent_callback=print_out
+    #after_agent_callback=print_out
 )
 

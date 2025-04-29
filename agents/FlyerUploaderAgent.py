@@ -30,7 +30,6 @@ class FlyerUploaderAgent(BaseAgent):
         self,
         ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        print("IN UPLOADER")
 
         load_dotenv()
 
