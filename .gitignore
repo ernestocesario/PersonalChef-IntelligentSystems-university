@@ -1,3 +1,6 @@
 .venv
 .env
 flyer.pdf
+
+**/__pycache__/
+*.py[cod]

@@ -16,12 +16,6 @@ from constants.agents import *
 
 
 
-def print_out(callback_context: CallbackContext) -> Optional[Content]:
-    print("AFTER RECIPE MAKER FILTER:")
-    print(callback_context.state.get(RECIPE_MAKER_AGENT_OUTKEY, "Errore"))
-    print("END PRINT")
-
-
 def add_recipe_difficulty_to_request(
         callback_context: CallbackContext, llm_request: LlmRequest
 ) -> Optional[LlmResponse]:
@@ -29,11 +23,20 @@ def add_recipe_difficulty_to_request(
     previous_output = callback_context.state.get(DIET_FILTER_AGENT_OUTKEY, "")
     difficulty = callback_context.state.get(DIFFICULTY_SSK, "")
 
-    prompt_part = Part(text=(
-        "Take the following CSV structured as product§price provided: \n" + previous_output + "\nand create a cooking recipe that has the following difficulty of preparation: " + difficulty +
-        "The cooking recipe you create can contain ONLY the products provided, and its length and complexity of preparation should depend on the difficulty specified above.\n" \
-        "Returns ONLY the recipe title followed by a newline and the CSV structured as product§price where each line represent an ingredient of the recipe, and it is separated by a newline. DO NOT print any explanation, comments, markdown formatting!"
-    ))
+    instruction = f"""Take the following CSV structured as product§price provided:
+{previous_output}
+and create a cooking recipe that has the following difficulty of preparation: {difficulty}
+The cooking recipe you create can contain ONLY the products provided, and its length and complexity of preparation should depend on the difficulty specified above.
+Return ONLY the recipe structured as below:
+RECIPE TITLE
+RECIPE INSTRUCTIONS
+RECIPE INGREDIENTS
+
+WHERE:
+INGREDIENTS RECIPE is a CSV structured as product§price where each line represents an ingredient of the recipe
+DO NOT print any explanation, comments, markdown formatting!"""
+
+    prompt_part = Part(text=instruction)
 
     llm_request.contents = [
         Content(role="user", parts=[prompt_part])
@@ -50,5 +53,4 @@ recipeMakerAgent = LlmAgent(
                 "Returns ONLY the recipe title and a CSV structured as product§price where each line represent an ingredient of the recipe.",
     output_key=RECIPE_MAKER_AGENT_OUTKEY,
     before_model_callback=add_recipe_difficulty_to_request,
-    #after_agent_callback=print_out,
 )

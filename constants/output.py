@@ -1,3 +1,4 @@
 RECIPE_TITLE_KEY = "recipe_title"
-RECIPE_CONTENT_KEY = "recipe_content"
-RECIPE_PRICE_KEY = "recipe_price"
+RECIPE_INSTRUCTIONS_KEY = "recipe_instructions"
+RECIPE_INGREDIENTS_KEY = "recipe_ingredients"
+RECIPE_COST_KEY = "recipe_price"

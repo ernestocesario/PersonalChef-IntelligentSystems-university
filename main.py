@@ -49,8 +49,9 @@ def main():
         result = asyncio.run(make_food_recipe(diet, difficulty))
         print("🎉 Here is your generated recipe! 🍽️")
         print("Title: " + result[RECIPE_TITLE_KEY] + "\n")
-        print("Ingredients:\n" + result[RECIPE_CONTENT_KEY] + "\n")
-        print("Total cost: " + result[RECIPE_PRICE_KEY] + "€")
+        print("Instructions:\n" + result[RECIPE_INSTRUCTIONS_KEY] + "\n")
+        print("Ingredients:\n" + result[RECIPE_INGREDIENTS_KEY] + "\n")
+        print("Total cost: " + result[RECIPE_COST_KEY] + "€")
     except Exception as e:
         print(f"An error occurred: {e}")
 

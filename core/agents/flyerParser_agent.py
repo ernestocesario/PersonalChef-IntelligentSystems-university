@@ -31,10 +31,7 @@ def add_flyer_to_request(
 
     return None
 
-def print_out(callback_context: CallbackContext) -> Optional[Content]:
-    print("AFTER PARSER:")
-    print(callback_context.state.get(FLYER_PARSER_AGENT_OUTKEY, "Error"))
-    print("END PRINT")
+
 
 flyerParserAgent = LlmAgent(
     name = "Flyer_parser_agent",
@@ -42,6 +39,5 @@ flyerParserAgent = LlmAgent(
     description="Provides a csv of type product§price containing all products in a supermarket flyer",
     before_model_callback=add_flyer_to_request,
     output_key=FLYER_PARSER_AGENT_OUTKEY,
-    #after_agent_callback=print_out
 )
 

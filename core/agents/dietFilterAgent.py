@@ -9,10 +9,6 @@ from typing import Optional
 from constants.llmModels import *
 from constants.agents import *
 
-def print_out(callback_context: CallbackContext) -> Optional[Content]:
-    print("AFTER AGENT DIET FILTER:")
-    print(callback_context.state.get(DIET_FILTER_AGENT_OUTKEY, "Errore"))
-    print("END PRINT")
 
 
 def add_diet_to_request(
@@ -21,9 +17,6 @@ def add_diet_to_request(
     
     previous_output = callback_context.state.get(FLYER_PARSER_AGENT_OUTKEY, "")
     diet = callback_context.state.get(DIET_SSK, "")
-
-
-     
 
     prompt_part = Part(text=(
         "Take the following CSV structured as product§price provided: \n" + previous_output + "\n" \
@@ -45,5 +38,4 @@ dietFilterAgent = LlmAgent(
                 "Returns ONLY a filtered product§price csv.",
     output_key=DIET_FILTER_AGENT_OUTKEY,
     before_model_callback=add_diet_to_request,
-    #after_agent_callback=print_out
 )
