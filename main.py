@@ -1,6 +1,6 @@
 from core.runner import make_food_recipe
-from utils.Diet import Diet
-from utils.Difficulty import Difficulty
+from utils.diet import Diet
+from utils.difficulty import Difficulty
 from constants.output import *
 import asyncio
 
@@ -8,7 +8,7 @@ import asyncio
 def choose_diet():
     print("🍽️ Choose a diet from the following options:")
     for i, diet in enumerate(Diet, 1):
-        print(f"{i}. {diet.name} 🍎" if diet == Diet.VEGAN else f"{i}. {diet.name} 🥩")
+        print(f"{i}. {diet.name} 🍎" if diet == Diet.VEGAN or diet == Diet.VEGETARIAN else f"{i}. {diet.name} 🥩")
 
     choice = int(input("Please enter the number corresponding to your choice: "))
     try:

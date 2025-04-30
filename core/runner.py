@@ -8,15 +8,15 @@ from google.genai import types
 
 from typing import Optional, Tuple
 
-from core.agents.Downloader_agent import DownloaderAgent
-from core.agents.FlyerUploaderAgent import FlyerUploaderAgent
-from core.agents.FlyerParser_agent import flyerParserAgent
-from core.agents.DietFilterAgent import dietFilterAgent
-from core.agents.RecipeMakerAgent import recipeMakerAgent
-from core.agents.RecipeParserAgent import recipeParserAgent
+from core.agents.downloader_agent import DownloaderAgent
+from core.agents.flyerUploaderAgent import FlyerUploaderAgent
+from core.agents.flyerParser_agent import flyerParserAgent
+from core.agents.dietFilterAgent import dietFilterAgent
+from core.agents.recipeMakerAgent import recipeMakerAgent
+from core.agents.recipeParserAgent import recipeParserAgent
 
-from utils.Diet import Diet
-from utils.Difficulty import Difficulty
+from utils.diet import Diet
+from utils.difficulty import Difficulty
 from constants.agents import *
 from constants.output import *
 

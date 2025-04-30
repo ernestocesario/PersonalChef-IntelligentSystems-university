@@ -1,4 +1,4 @@
-from exceptions.DownloadErrorException import DownloadErrorException
+from exceptions.downloadErrorException import DownloadErrorException
 import requests
 
 
