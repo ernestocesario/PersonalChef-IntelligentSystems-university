@@ -1,0 +1,9 @@
+gradio
+python-dotenv
+requests
+google-adk
+google-generativeai
+pydantic
+pillow
+matplotlib
+fpdf==1.7.2

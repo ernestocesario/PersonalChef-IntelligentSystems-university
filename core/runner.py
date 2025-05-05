@@ -10,10 +10,10 @@ from typing import Optional, Tuple
 
 from core.agents.downloader_agent import DownloaderAgent
 from core.agents.flyerUploaderAgent import FlyerUploaderAgent
-from core.agents.flyerParser_agent import flyerParserAgent
-from core.agents.dietFilterAgent import dietFilterAgent
-from core.agents.recipeMakerAgent import recipeMakerAgent
-from core.agents.recipeParserAgent import recipeParserAgent
+from core.agents.flyerParser_agent import FlyerParserAgent
+from core.agents.dietFilterAgent import DietFilterAgent
+from core.agents.recipeMakerAgent import RecipeMakerAgent
+from core.agents.recipeParserAgent import RecipeParserAgent
 
 from utils.diet import Diet
 from utils.difficulty import Difficulty
@@ -24,6 +24,10 @@ from constants.output import *
 async def make_food_recipe(diet: Diet, difficulty: Difficulty) -> dict[str, str]:
     downloaderAgent = DownloaderAgent()
     flyerUploaderAgent = FlyerUploaderAgent()
+    flyerParserAgent = FlyerParserAgent()
+    dietFilterAgent = DietFilterAgent()
+    recipeMakerAgent = RecipeMakerAgent()
+    recipeParserAgent = RecipeParserAgent()
 
     pipeline = SequentialAgent(
         name="SequentialAgent",

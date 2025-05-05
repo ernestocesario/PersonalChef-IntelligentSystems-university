@@ -46,11 +46,13 @@ DO NOT print any explanation, comments, markdown formatting!"""
 
 
 
-recipeMakerAgent = LlmAgent(
-    name = "Recipe_maker_agent",
-    model = GEMINI_2_0_FLASH,
-    description="Takes as input a CSV structured as product§price and the difficulty of the recipe to generate, and creates one cooking recipe using ONLY the products in the csv. " \
-                "Returns ONLY the recipe title and a CSV structured as product§price where each line represent an ingredient of the recipe.",
-    output_key=RECIPE_MAKER_AGENT_OUTKEY,
-    before_model_callback=add_recipe_difficulty_to_request,
-)
+class RecipeMakerAgent(LlmAgent):
+    def __init__(self):
+        super().__init__(
+            name = "Recipe_maker_agent",
+            model = GEMINI_2_0_FLASH,
+            description="Takes as input a CSV structured as product§price and the difficulty of the recipe to generate, and creates one cooking recipe using ONLY the products in the csv. " \
+                        "Returns ONLY the recipe title and a CSV structured as product§price where each line represent an ingredient of the recipe.",
+            output_key=RECIPE_MAKER_AGENT_OUTKEY,
+            before_model_callback=add_recipe_difficulty_to_request,
+        )
