@@ -10,7 +10,7 @@ class RecipeParserAgent(LlmAgent):
     def __init__(self):
         super().__init__(
             name = "Recipe_parser_agent",
-            model = GEMINI_2_0_FLASH,
+            model = GEMINI_2_0_FLASH_LITE,
             description="Takes a recipe as input and parses it using recipe_parser_tool",
             instruction=f"""Take the recipe provided in the session state under the key '{RECIPE_MAKER_AGENT_OUTKEY}'. The recipe is structured as below:
 TITLE_RECIPE

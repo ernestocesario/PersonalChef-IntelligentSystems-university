@@ -36,7 +36,7 @@ class DietFilterAgent(LlmAgent):
     def __init__(self):
         super().__init__(
             name = "Diet_filter_agent",
-            model = GEMINI_2_0_FLASH,
+            model = GEMINI_2_0_FLASH_LITE,
             description="Takes as input a csv structured as product§price and deletes all rows representing products that do not meet the specified diet. " \
                     "Returns ONLY a filtered product§price csv.",
             output_key=DIET_FILTER_AGENT_OUTKEY,

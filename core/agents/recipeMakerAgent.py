@@ -50,7 +50,7 @@ class RecipeMakerAgent(LlmAgent):
     def __init__(self):
         super().__init__(
             name = "Recipe_maker_agent",
-            model = GEMINI_2_0_FLASH,
+            model = GEMINI_2_0_FLASH_LITE,
             description="Takes as input a CSV structured as product§price and the difficulty of the recipe to generate, and creates one cooking recipe using ONLY the products in the csv. " \
                         "Returns ONLY the recipe title and a CSV structured as product§price where each line represent an ingredient of the recipe.",
             output_key=RECIPE_MAKER_AGENT_OUTKEY,
