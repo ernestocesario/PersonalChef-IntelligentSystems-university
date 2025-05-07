@@ -36,6 +36,10 @@ class FlyerUploaderAgent(BaseAgent):
         try:
             client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
             flyer_file = client.files.upload(file=FLYER_FILEPATH)
+
+            if os.path.exists(FLYER_FILEPATH):
+                os.remove(FLYER_FILEPATH)
+
             ctx.session.state[FLYER_FILE_REFERENCE_SSK] = flyer_file
 
             yield Event(
