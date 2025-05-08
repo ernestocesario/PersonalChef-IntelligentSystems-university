@@ -4,7 +4,9 @@ from google.adk.models.llm_request import LlmRequest
 from google.adk.models.llm_response import LlmResponse
 from google.adk.sessions import InMemorySessionService
 from google.genai.types import Content, Part
+from google import genai
 
+import os
 from typing import Optional
 from constants.llmModels import GEMINI_1_5_FLASH
 from constants.agents import *
@@ -33,6 +35,16 @@ def add_flyer_to_request(
 
 
 
+def delete_flyer_from_cloud(callback_context: CallbackContext) -> Optional[Content]:
+    client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+
+    flyer_file = callback_context.state.get(FLYER_FILE_REFERENCE_SSK)
+
+    client.files.delete(name = flyer_file.name)
+
+    return None
+
+
 class FlyerParserAgent(LlmAgent):
     def __init__(self):
         super().__init__(
@@ -41,4 +53,5 @@ class FlyerParserAgent(LlmAgent):
             description="Provides a csv of type product§price containing all products in a supermarket flyer",
             before_model_callback=add_flyer_to_request,
             output_key=FLYER_PARSER_AGENT_OUTKEY,
+            after_agent_callback=delete_flyer_from_cloud
         )

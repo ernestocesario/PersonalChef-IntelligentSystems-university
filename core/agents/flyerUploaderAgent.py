@@ -1,16 +1,14 @@
 # agents/downloader_agent.py
-from typing import AsyncGenerator, Optional
+from typing import AsyncGenerator
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.agents import BaseAgent
 from google.adk.events import Event
 from google import genai
 
-from google.adk.agents.callback_context import CallbackContext
 
 import os
 from dotenv import load_dotenv
 
-from utils.file_downloader import download_from_link
 from constants.flyer import *
 from constants.agents import FLYER_FILE_REFERENCE_SSK
 
